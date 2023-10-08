@@ -231,7 +231,7 @@ void ImmediateMesh::surface_end() {
 
 		if (uses_colors) {
 			format |= ARRAY_FORMAT_COLOR;
-			attribute_stride += sizeof(uint8_t) * 4;
+			attribute_stride += sizeof(uint16_t) * 4;
 		}
 		uint32_t uv_offset = 0;
 		if (uses_uvs) {
@@ -252,12 +252,12 @@ void ImmediateMesh::surface_end() {
 
 		for (uint32_t i = 0; i < vertices.size(); i++) {
 			if (uses_colors) {
-				uint8_t *color8 = (uint8_t *)&surface_attribute_ptr[i * attribute_stride];
+				uint16_t *color16 = (uint16_t *)&surface_attribute_ptr[i * attribute_stride];
 
-				color8[0] = uint8_t(CLAMP(colors[i].r * 255.0, 0.0, 255.0));
-				color8[1] = uint8_t(CLAMP(colors[i].g * 255.0, 0.0, 255.0));
-				color8[2] = uint8_t(CLAMP(colors[i].b * 255.0, 0.0, 255.0));
-				color8[3] = uint8_t(CLAMP(colors[i].a * 255.0, 0.0, 255.0));
+				color16[0] = Math::make_half_float(colors[i].r);
+				color16[1] = Math::make_half_float(colors[i].g);
+				color16[2] = Math::make_half_float(colors[i].b);
+				color16[3] = Math::make_half_float(colors[i].a);
 			}
 			if (uses_uvs) {
 				float *uv = (float *)&surface_attribute_ptr[i * attribute_stride + uv_offset];

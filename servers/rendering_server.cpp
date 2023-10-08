@@ -711,13 +711,13 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint64_t p_format, uint
 
 				const Color *src = array.ptr();
 				for (int i = 0; i < p_vertex_array_len; i++) {
-					uint8_t color8[4] = {
-						uint8_t(CLAMP(src[i].r * 255.0, 0.0, 255.0)),
-						uint8_t(CLAMP(src[i].g * 255.0, 0.0, 255.0)),
-						uint8_t(CLAMP(src[i].b * 255.0, 0.0, 255.0)),
-						uint8_t(CLAMP(src[i].a * 255.0, 0.0, 255.0))
+					uint16_t color16[4] = {
+						uint16_t(Math::make_half_float(src[i].r)),
+						uint16_t(Math::make_half_float(src[i].g)),
+						uint16_t(Math::make_half_float(src[i].b)),
+						uint16_t(Math::make_half_float(src[i].a))
 					};
-					memcpy(&aw[p_offsets[ai] + i * p_attrib_stride], color8, 4);
+					memcpy(&aw[p_offsets[ai] + i * p_attrib_stride], color16, 8);
 				}
 			} break;
 			case RS::ARRAY_TEX_UV: {
@@ -1079,7 +1079,7 @@ void RenderingServer::mesh_surface_make_offsets_from_format(uint64_t p_format, i
 				elem_size = (p_format & ARRAY_FLAG_COMPRESS_ATTRIBUTES) ? 0 : 4;
 			} break;
 			case RS::ARRAY_COLOR: {
-				elem_size = 4;
+				elem_size = 8;
 			} break;
 			case RS::ARRAY_TEX_UV: {
 				elem_size = (p_format & ARRAY_FLAG_COMPRESS_ATTRIBUTES) ? 4 : 8;
@@ -1526,9 +1526,9 @@ Array RenderingServer::_get_array_from_surface(uint64_t p_format, Vector<uint8_t
 				Color *w = arr.ptrw();
 
 				for (int32_t j = 0; j < p_vertex_len; j++) {
-					const uint8_t *v = reinterpret_cast<const uint8_t *>(&ar[j * attrib_elem_size + offsets[i]]);
+					const uint16_t *v = reinterpret_cast<const uint16_t *>(&ar[j * attrib_elem_size + offsets[i]]);
 
-					w[j] = Color(v[0] / 255.0, v[1] / 255.0, v[2] / 255.0, v[3] / 255.0);
+					w[j] = Color(Math::half_to_float(v[0]), Math::half_to_float(v[1]), Math::half_to_float(v[2]), Math::half_to_float(v[3]));
 				}
 
 				ret[i] = arr;

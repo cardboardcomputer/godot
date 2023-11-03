@@ -77,6 +77,7 @@ private:
 	real_t v_offset = 0.0;
 	real_t h_offset = 0.0;
 	KeepAspect keep_aspect = KEEP_HEIGHT;
+	Projection projection_multiplier;
 
 	RID camera;
 	RID scenario_id;
@@ -122,6 +123,8 @@ public:
 	void set_orthogonal(real_t p_size, real_t p_z_near, real_t p_z_far);
 	void set_frustum(real_t p_size, Vector2 p_offset, real_t p_z_near, real_t p_z_far);
 	void set_projection(Camera3D::ProjectionType p_mode);
+	void set_projection_multiplier(Projection p_multiplier);
+	void clear_projection_multiplier();
 
 	void make_current();
 	void clear_current(bool p_enable_next = true);

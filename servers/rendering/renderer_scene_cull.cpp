@@ -127,6 +127,12 @@ void RendererSceneCull::camera_set_use_vertical_aspect(RID p_camera, bool p_enab
 	camera->vaspect = p_enable;
 }
 
+void RendererSceneCull::camera_set_projection_multiplier(RID p_camera, Projection p_multiplier) {
+	Camera *camera = camera_owner.get_or_null(p_camera);
+	ERR_FAIL_COND(!camera);
+	camera->projection_multiplier = p_multiplier;
+}
+
 bool RendererSceneCull::is_camera(RID p_camera) const {
 	return camera_owner.owns(p_camera);
 }
@@ -2605,6 +2611,8 @@ void RendererSceneCull::render_camera(const Ref<RenderSceneBuffers> &p_render_bu
 						camera->vaspect);
 			} break;
 		}
+
+		projection = projection * camera->projection_multiplier;
 
 		camera_data.set_camera(transform, projection, is_orthogonal, vaspect, jitter, camera->visible_layers);
 	} else {

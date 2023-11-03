@@ -86,6 +86,7 @@ public:
 		RID compositor;
 
 		Transform3D transform;
+		Projection projection_multiplier;
 
 		Camera() {
 			visible_layers = 0xFFFFFFFF;
@@ -96,6 +97,7 @@ public:
 			size = 1.0;
 			offset = Vector2();
 			vaspect = false;
+			projection_multiplier.set_identity();
 		}
 	};
 
@@ -113,6 +115,7 @@ public:
 	virtual void camera_set_camera_attributes(RID p_camera, RID p_attributes);
 	virtual void camera_set_compositor(RID p_camera, RID p_compositor);
 	virtual void camera_set_use_vertical_aspect(RID p_camera, bool p_enable);
+	virtual void camera_set_projection_multiplier(RID p_camera, Projection p_multiplier);
 	virtual bool is_camera(RID p_camera) const;
 
 	/* OCCLUDER API */

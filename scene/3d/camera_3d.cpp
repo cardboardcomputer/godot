@@ -184,6 +184,8 @@ Projection Camera3D::_get_camera_projection(real_t p_near) const {
 		} break;
 	}
 
+	cm = cm * projection_multiplier;
+
 	return cm;
 }
 
@@ -246,6 +248,16 @@ void Camera3D::set_projection(ProjectionType p_mode) {
 		_update_camera_mode();
 		notify_property_list_changed();
 	}
+}
+
+void Camera3D::set_projection_multiplier(Projection p_multiplier) {
+	projection_multiplier = p_multiplier;
+	RenderingServer::get_singleton()->camera_set_projection_multiplier(camera, projection_multiplier);
+}
+
+void Camera3D::clear_projection_multiplier() {
+	projection_multiplier.set_identity();
+	RenderingServer::get_singleton()->camera_set_projection_multiplier(camera, projection_multiplier);
 }
 
 RID Camera3D::get_camera() const {
@@ -560,6 +572,9 @@ void Camera3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_cull_mask_value", "layer_number", "value"), &Camera3D::set_cull_mask_value);
 	ClassDB::bind_method(D_METHOD("get_cull_mask_value", "layer_number"), &Camera3D::get_cull_mask_value);
 
+	ClassDB::bind_method(D_METHOD("set_projection_multiplier", "multiplier"), &Camera3D::set_projection_multiplier);
+	ClassDB::bind_method(D_METHOD("clear_projection_multiplier"), &Camera3D::clear_projection_multiplier);
+
 	//ClassDB::bind_method(D_METHOD("_camera_make_current"),&Camera::_camera_make_current );
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "keep_aspect", PROPERTY_HINT_ENUM, "Keep Width,Keep Height"), "set_keep_aspect_mode", "get_keep_aspect_mode");
@@ -754,6 +769,7 @@ Camera3D::Camera3D() {
 	velocity_tracker.instantiate();
 	set_notify_transform(true);
 	set_disable_scale(true);
+	projection_multiplier.set_identity();
 }
 
 Camera3D::~Camera3D() {

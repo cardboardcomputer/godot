@@ -588,6 +588,7 @@ public:
 	FUNC2(camera_set_environment, RID, RID)
 	FUNC2(camera_set_camera_attributes, RID, RID)
 	FUNC2(camera_set_use_vertical_aspect, RID, bool)
+	FUNC2(camera_set_projection_multiplier, RID, Projection)
 
 	/* OCCLUDER */
 	FUNCRIDSPLIT(occluder)

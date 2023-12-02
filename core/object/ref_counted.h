@@ -119,6 +119,7 @@ public:
 
 	template <class T_Other>
 	void operator=(const Ref<T_Other> &p_from) {
+		static_assert(std::is_base_of_v<T, T_Other> || std::is_base_of_v<T_Other, T>, "Cannot convert types");
 		RefCounted *refb = const_cast<RefCounted *>(static_cast<const RefCounted *>(p_from.ptr()));
 		if (!refb) {
 			unref();

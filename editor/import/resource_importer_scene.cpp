@@ -696,6 +696,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 					StaticBody3D *col = memnew(StaticBody3D);
 					col->set_transform(mi->get_transform());
 					col->set_name(fixed_name);
+					_copy_meta(p_node, col);
 					p_node->replace_by(col);
 					p_node->set_owner(nullptr);
 					memdelete(p_node);
@@ -710,6 +711,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 			StaticBody3D *sb = memnew(StaticBody3D);
 			sb->set_name(fixed_name);
 			Object::cast_to<Node3D>(sb)->set_transform(Object::cast_to<Node3D>(p_node)->get_transform());
+			_copy_meta(p_node, sb);
 			p_node->replace_by(sb);
 			p_node->set_owner(nullptr);
 			memdelete(p_node);
@@ -754,6 +756,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 
 			RigidBody3D *rigid_body = memnew(RigidBody3D);
 			rigid_body->set_name(_fixstr(name, "rigid_body"));
+			_copy_meta(p_node, rigid_body);
 			p_node->replace_by(rigid_body);
 			rigid_body->set_transform(mi->get_transform());
 			p_node = rigid_body;
@@ -818,6 +821,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 		Ref<NavigationMesh> nmesh = mesh->create_navigation_mesh();
 		nmi->set_navigation_mesh(nmesh);
 		Object::cast_to<Node3D>(nmi)->set_transform(mi->get_transform());
+		_copy_meta(p_node, nmi);
 		p_node->replace_by(nmi);
 		p_node->set_owner(nullptr);
 		memdelete(p_node);
@@ -858,6 +862,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 		VehicleBody3D *bv = memnew(VehicleBody3D);
 		String n = _fixstr(p_node->get_name(), "vehicle");
 		bv->set_name(n);
+		_copy_meta(p_node, bv);
 		p_node->replace_by(bv);
 		p_node->set_name(n);
 		bv->add_child(p_node);
@@ -877,6 +882,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 		VehicleWheel3D *bv = memnew(VehicleWheel3D);
 		String n = _fixstr(p_node->get_name(), "wheel");
 		bv->set_name(n);
+		_copy_meta(p_node, bv);
 		p_node->replace_by(bv);
 		p_node->set_name(n);
 		bv->add_child(p_node);
@@ -1260,6 +1266,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 							case MESH_PHYSICS_RIGID_BODY_AND_MESH: {
 								RigidBody3D *rigid_body = memnew(RigidBody3D);
 								rigid_body->set_name(p_node->get_name());
+								_copy_meta(p_node, rigid_body);
 								p_node->replace_by(rigid_body);
 								rigid_body->set_transform(mi->get_transform() * get_collision_shapes_transform(node_settings));
 								rigid_body->set_position(p_applied_root_scale * rigid_body->get_position());
@@ -1278,6 +1285,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 								col->set_transform(mi->get_transform() * get_collision_shapes_transform(node_settings));
 								col->set_position(p_applied_root_scale * col->get_position());
 								col->set_name(p_node->get_name());
+								_copy_meta(p_node, col);
 								p_node->replace_by(col);
 								p_node->set_owner(nullptr);
 								memdelete(p_node);
@@ -1293,6 +1301,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 								area->set_transform(mi->get_transform() * get_collision_shapes_transform(node_settings));
 								area->set_position(p_applied_root_scale * area->get_position());
 								area->set_name(p_node->get_name());
+								_copy_meta(p_node, area);
 								p_node->replace_by(area);
 								p_node->set_owner(nullptr);
 								memdelete(p_node);
@@ -1336,6 +1345,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 
 					if (navmesh_mode == NAVMESH_NAVMESH_ONLY) {
 						nmi->set_transform(mi->get_transform());
+						_copy_meta(p_node, nmi);
 						p_node->replace_by(nmi);
 						p_node->set_owner(nullptr);
 						memdelete(p_node);
@@ -2151,6 +2161,7 @@ Node *ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_
 			}
 
 			if (mesh.is_valid()) {
+				_copy_meta(*(src_mesh_node->get_mesh()), *mesh);
 				mesh_node->set_mesh(mesh);
 				for (int i = 0; i < mesh->get_surface_count(); i++) {
 					mesh_node->set_surface_override_material(i, src_mesh_node->get_surface_material(i));
@@ -2179,6 +2190,8 @@ Node *ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_
 		mesh_node->set_visibility_range_end_margin(src_mesh_node->get_visibility_range_end_margin());
 		mesh_node->set_visibility_range_fade_mode(src_mesh_node->get_visibility_range_fade_mode());
 
+		_copy_meta(p_node, mesh_node);
+
 		p_node->replace_by(mesh_node);
 		p_node->set_owner(nullptr);
 		memdelete(p_node);
@@ -2199,6 +2212,15 @@ void ResourceImporterScene::_add_shapes(Node *p_node, const Vector<Ref<Shape3D>>
 		p_node->add_child(cshape, true);
 
 		cshape->set_owner(p_node->get_owner());
+	}
+}
+
+void ResourceImporterScene::_copy_meta(Object *p_src_object, Object *p_dst_object) {
+	List<StringName> meta_list;
+	p_src_object->get_meta_list(&meta_list);
+	for (const StringName &meta_key : meta_list) {
+		Variant meta_value = p_src_object->get_meta(meta_key);
+		p_dst_object->set_meta(meta_key, meta_value);
 	}
 }
 

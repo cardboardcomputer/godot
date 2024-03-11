@@ -272,6 +272,20 @@ RID GodotNavigationServer3D::map_get_closest_point_owner(RID p_map, const Vector
 	return map->get_closest_point_owner(p_point);
 }
 
+Dictionary GodotNavigationServer3D::map_get_closest_point_info(RID p_map, const Vector3 &p_point) const {
+	const NavMap *map = map_owner.get_or_null(p_map);
+	ERR_FAIL_NULL_V(map, Dictionary());
+
+	gd::ClosestPointQueryResult cp = map->get_closest_point_info(p_point);
+
+	Dictionary d;
+	d["point"] = cp.point;
+	d["normal"] = cp.normal;
+	d["region_rid"] = cp.owner;
+
+	return d;
+}
+
 TypedArray<RID> GodotNavigationServer3D::map_get_links(RID p_map) const {
 	TypedArray<RID> link_rids;
 	const NavMap *map = map_owner.get_or_null(p_map);

@@ -109,6 +109,7 @@ public:
 	virtual Vector3 map_get_closest_point(RID p_map, const Vector3 &p_point) const = 0;
 	virtual Vector3 map_get_closest_point_normal(RID p_map, const Vector3 &p_point) const = 0;
 	virtual RID map_get_closest_point_owner(RID p_map, const Vector3 &p_point) const = 0;
+	virtual Dictionary map_get_closest_point_info(RID p_map, const Vector3 &p_point) const = 0;
 
 	virtual TypedArray<RID> map_get_links(RID p_map) const = 0;
 	virtual TypedArray<RID> map_get_regions(RID p_map) const = 0;

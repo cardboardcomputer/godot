@@ -57,6 +57,7 @@ public:
 	Vector3 map_get_closest_point_to_segment(RID p_map, const Vector3 &p_from, const Vector3 &p_to, const bool p_use_collision) const override { return Vector3(); }
 	Vector3 map_get_closest_point(RID p_map, const Vector3 &p_point) const override { return Vector3(); }
 	Vector3 map_get_closest_point_normal(RID p_map, const Vector3 &p_point) const override { return Vector3(); }
+	Dictionary map_get_closest_point_info(RID p_map, const Vector3 &p_point) const override { return Dictionary(); }
 	RID map_get_closest_point_owner(RID p_map, const Vector3 &p_point) const override { return RID(); }
 	TypedArray<RID> map_get_links(RID p_map) const override { return TypedArray<RID>(); }
 	TypedArray<RID> map_get_regions(RID p_map) const override { return TypedArray<RID>(); }
